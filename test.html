@@ -58,6 +58,7 @@ PIXI.loader.add('bunny', './img/bunny.png').load(function(loader, resources) {
 
     // This creates a texture from a 'bunny.png' image.
     var bunny = new PIXI.Sprite(resources.bunny.texture);
+    var bunny2 = new PIXI.Sprite(resources.bunny.texture);
 
     // Setup the position of the bunny
     bunny.x = app.renderer.width / 2;
@@ -82,14 +83,48 @@ PIXI.loader.add('bunny', './img/bunny.png').load(function(loader, resources) {
     up.tillpress    = move( 0,-5);
     down.tillpress  = move( 0, 5);
 
+    //タッチイベント(マウスイベント)を有効化
+bunny.interactive = true;
+//イベントの追加
+bunny.on('click', function () {
+  alert('button clicked');
+})
+.on('touchstart', function () {
+  alert('button touchstarted');
+});
+
+circle = new PIXI.Graphics();
+circle.beginFill(0xFFFFFF);
+circle.drawCircle(60, 60, 50);
+circle.endFill();
+app.stage.addChild(circle);
+
+function redraw_circle(target, radius){
+  if(radius > 60){
+    return;
+  }
+
+  target.beginFill(0x000000);
+  target.drawCircle(60, 60, radius);
+  target.endFill();
+}
+circle2 = new PIXI.Graphics();
+circle2.beginFill(0x000000);
+circle2.drawCircle(60, 60, 5);
+circle2.endFill();
+app.stage.addChild(circle2);
+
     // Add the bunny to the scene we are building.
     app.stage.addChild(bunny);
+    app.stage.addChild(bunny2);
 
     // Listen for frame updates
     app.ticker.add(function() {
          // each frame we spin the bunny around a bit
         bunny.rotation += 0.01;
+        redraw_circle(circle2, bunny.rotation)
     });
+
 });
 </script>
 </body>
