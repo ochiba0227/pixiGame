@@ -1,0 +1,95 @@
+<body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/4.5.1/pixi.min.js"></script>
+<script>
+function keyboard(keyCode) {
+    var key     = {}
+    key.code    = keyCode
+    key.isDown  = false
+    key.isUp    = true
+    key.press   = undefined
+    key.tillpress   = undefined
+    key.release = undefined
+    //The `downHandler`
+    key.downHandler = function(event) {
+        if (event.keyCode === key.code) {
+            if (key.isUp && key.press) { key.press() }
+            if (key.tillpress) { key.tillpress() }
+            key.isDown = true
+            key.isUp = false
+        }
+        event.preventDefault()
+    }
+    //The `upHandler`
+    key.upHandler = function(event) {
+        if (event.keyCode === key.code) {
+            if (key.isDown && key.release) { key.release() }
+            key.isDown = false
+            key.isUp = true
+        }
+        event.preventDefault()
+    }
+    //Attach event listeners
+    window.addEventListener(
+        "keydown", key.downHandler.bind(key), false
+    )
+    window.addEventListener(
+        "keyup", key.upHandler.bind(key), false
+    )
+    return key
+}
+
+// The application will create a renderer using WebGL, if possible,
+// with a fallback to a canvas render. It will also setup the ticker
+// and the root stage PIXI.Container.
+var app = new PIXI.Application();
+
+// The application will create a canvas element for you that you
+// can then insert into the DOM.
+document.body.appendChild(app.view);
+
+// load the texture we need
+PIXI.loader.add('bunny', './img/bunny.png').load(function(loader, resources) {
+
+      //キーボード
+    var left  = keyboard(37)
+    var up    = keyboard(38)
+    var right = keyboard(39)
+    var down  = keyboard(40)
+
+    // This creates a texture from a 'bunny.png' image.
+    var bunny = new PIXI.Sprite(resources.bunny.texture);
+
+    // Setup the position of the bunny
+    bunny.x = app.renderer.width / 2;
+    bunny.y = app.renderer.height / 2;
+
+    bunny.scale.x = 0.1;
+    bunny.scale.y = 0.1;
+
+    // Rotate around the center
+    bunny.anchor.x = 0.5;
+    bunny.anchor.y = 0.5;
+
+    function move(vx, vy) {
+        return function() {
+            bunny.x += vx;
+            bunny.y += vy;
+        };
+    };
+
+    right.tillpress = move( 5, 0);
+    left.tillpress  = move(-5, 0);
+    up.tillpress    = move( 0,-5);
+    down.tillpress  = move( 0, 5);
+
+    // Add the bunny to the scene we are building.
+    app.stage.addChild(bunny);
+
+    // Listen for frame updates
+    app.ticker.add(function() {
+         // each frame we spin the bunny around a bit
+        bunny.rotation += 0.01;
+    });
+});
+</script>
+</body>
