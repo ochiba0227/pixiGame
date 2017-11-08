@@ -92,6 +92,14 @@ bunny.on('click', function () {
 .on('touchstart', function () {
   alert('button touchstarted');
 });
+app.stage.interactive = true;
+
+app.stage.mousemove=  function(mouseData) {
+ var x = app.renderer.plugins.interaction.mouse.global.x;
+ var y =  app.renderer.plugins.interaction.mouse.global.y;
+bunny.position.x=x;
+bunny.position.y=y;
+}
 
 circle = new PIXI.Graphics();
 circle.beginFill(0xFFFFFF);
@@ -124,7 +132,6 @@ app.stage.addChild(circle2);
         bunny.rotation += 0.01;
         redraw_circle(circle2, bunny.rotation)
     });
-
 });
 </script>
 </body>
