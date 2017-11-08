@@ -126,11 +126,39 @@ app.stage.addChild(circle2);
     app.stage.addChild(bunny);
     app.stage.addChild(bunny2);
 
+  // 敵とプレイヤーの当たり判定処理
+function hitRectangle(r1, r2) {
+    var hit, cmbWth, cmbHgh, vx, vy
+    hit = false
+
+    r1.hlfW  = r1.width  / 2
+    r1.hlfH  = r1.height / 2
+    r2.hlfW  = r2.width  / 2
+    r2.hlfH  = r2.height / 2
+
+    r1.cX = r1.x + r1.hlfW;
+    r1.cY = r1.y + r1.hlfH;
+    r2.cX = r2.x + r2.hlfW;
+    r2.cY = r2.y + r2.hlfH;
+
+    vx = r1.cX - r2.cX
+    vy = r1.cY - r2.cY
+
+    cmbWth = r1.hlfW + r2.hlfW;
+    cmbHgh = r1.hlfH + r2.hlfH;
+
+    if ((Math.abs(vx) < cmbWth) && (Math.abs(vy) < cmbHgh)) { hit = true }
+
+   return hit
+}
+
     // Listen for frame updates
     app.ticker.add(function() {
          // each frame we spin the bunny around a bit
         bunny.rotation += 0.01;
         redraw_circle(circle2, bunny.rotation)
+        //当たり判定
+        hitRectangle(bunny, circle)
     });
 });
 </script>
