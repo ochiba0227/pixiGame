@@ -83,11 +83,25 @@ PIXI.loader.add('bunny', './img/bunny.png').load(function(loader, resources) {
     up.tillpress    = move( 0,-5);
     down.tillpress  = move( 0, 5);
 
+var circles = [];
+var add_circle = function(x, y ,r){
+  var circle = new PIXI.Graphics();
+  circle.position.x = x;
+  circle.position.y = y;
+  circle.beginFill(0xFFFFFF);
+  circle.drawCircle(0, 0, r);
+  circle.endFill();
+  app.stage.addChild(circle);
+  circles.push(circle);
+}
     //タッチイベント(マウスイベント)を有効化
 bunny.interactive = true;
 //イベントの追加
 bunny.on('click', function () {
-  alert('button clicked');
+   var x = this.position.x;
+   var y = this.position.y;
+   var r = 5;
+  add_circle(x, y ,r);
 })
 .on('touchstart', function () {
   alert('button touchstarted');
@@ -108,10 +122,9 @@ circle.endFill();
 app.stage.addChild(circle);
 
 function redraw_circle(target, radius){
-  if(radius > 60){
-    return;
+  if(radius > 1){
+    radius = 1;
   }
-
   target.beginFill(0x000000);
   target.drawCircle(60, 60, radius);
   target.endFill();
@@ -147,9 +160,20 @@ function hitRectangle(r1, r2) {
     cmbWth = r1.hlfW + r2.hlfW;
     cmbHgh = r1.hlfH + r2.hlfH;
 
-    if ((Math.abs(vx) < cmbWth) && (Math.abs(vy) < cmbHgh)) { hit = true }
+    if ((Math.abs(vx) < cmbWth) && (Math.abs(vy) < cmbHgh)) { hit = true;}
 
    return hit
+}
+
+var move_position = function(obj,x,y){
+  // TODO:絶対位置で500px移動したら消える
+  if(obj.position.y<-500){
+    app.stage.removeChild(obj);
+    return false;
+  }
+  obj.position.x = x;
+  obj.position.y = y;
+  return true;
 }
 
     // Listen for frame updates
@@ -158,7 +182,26 @@ function hitRectangle(r1, r2) {
         bunny.rotation += 0.01;
         redraw_circle(circle2, bunny.rotation)
         //当たり判定
-        hitRectangle(bunny, circle)
+        if(hitRectangle(bunny, circle)){
+          console.log("bunny hit!")
+        }
+        for(c in circles){
+          var obj = circles[c];
+          // 球の判定
+          if(hitRectangle(obj, circle)){
+            console.log(obj.position.x,obj.position.y)
+            console.log("ball hit!")
+            // 当たったら消す
+            app.stage.removeChild(obj);
+            circles.splice(c,1);
+          }
+          var x = obj.position.x;
+          var y = obj.position.y-10;
+          //範囲を超えたら削除
+          if(!move_position(obj,x,y)){
+            circles.splice(c,1);
+          }
+        }
     });
 });
 </script>
