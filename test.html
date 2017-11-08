@@ -122,9 +122,11 @@ circle.endFill();
 app.stage.addChild(circle);
 
 function redraw_circle(target, radius){
-  if(radius > 1){
-    radius = 1;
+  if(radius > 10){
+    radius = 10;
   }
+  // redraw前にクリアが必要
+  target.clear();
   target.beginFill(0x000000);
   target.drawCircle(60, 60, radius);
   target.endFill();
